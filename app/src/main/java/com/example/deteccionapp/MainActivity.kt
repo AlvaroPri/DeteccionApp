@@ -3,6 +3,7 @@ package com.example.deteccionapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -16,14 +17,11 @@ import coil.compose.AsyncImage
 import com.example.deteccionapp.retrofit.RetrofitClient
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.asRequestBody
-
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,10 +39,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     var imageUri by remember { mutableStateOf<String?>(null) }
-    var resultImageUri by remember { mutableStateOf<String?>(null) }  // Para la imagen procesada
+    var resultImageUri by remember { mutableStateOf<String?>(null) } // Para la imagen procesada
 
     val pickImage: ActivityResultLauncher<String> = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()) { uri ->
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: android.net.Uri? -> // Especificamos el tipo del parámetro
         imageUri = uri?.toString()
     }
 
@@ -98,7 +97,7 @@ fun performDetection(imageUri: String, onResult: (String) -> Unit) {
         override fun onResponse(call: Call<String>, response: Response<String>) {
             if (response.isSuccessful) {
                 // Asumimos que la respuesta es la URL de la imagen procesada
-                onResult(response.body().orEmpty())  // Aquí se pasa la URL o base64 de la imagen procesada
+                onResult(response.body().orEmpty()) // Aquí se pasa la URL o base64 de la imagen procesada
             } else {
                 onResult("Error en la detección")
             }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Imagen para Detección</title>
+</head>
+<body>
+    <h1>Subir Imagen para Detección</h1>
+    <input type="file" id="fileInput" />
+    <button id="uploadButton">Subir Imagen</button>
+    <br>
+    <h3>Resultado:</h3>
+    <img id="resultImage" alt="Imagen procesada con éxito" style="max-width: 100%; border: 1px solid #000;" />
+    <pre id="detectionResult"></pre>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('uploadButton').addEventListener('click', async () => {
+                const fileInput = document.getElementById('fileInput');
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    alert("Por favor, selecciona una imagen primero.");
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('image', file); // Añadimos la imagen con la clave 'image'
+
+                try {
+                    const response = await fetch('http://20.94.42.38:5000/predict', {
+                        method: 'POST',
+                        body: formData, // Enviamos la imagen como 'form-data'
+                    });
+
+                    // Verificar el estado de la respuesta del servidor
+                    if (!response.ok) {
+                        throw new Error(`Error en el servidor: ${response.status} ${response.statusText}`);
+                    }
+
+                    // Obtener la imagen procesada como blob
+                    const imageBlob = await response.blob();
+                    const imageUrl = URL.createObjectURL(imageBlob);
+
+                    // Mostrar la imagen procesada en el <img>
+                    document.getElementById('resultImage').src = imageUrl;
+
+                    // Obtener los resultados de detección como JSON
+                    const detectionData = await response.json();
+                    document.getElementById('detectionResult').textContent = JSON.stringify(detectionData, null, 2);
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert('Ocurrió un error al enviar la imagen o al procesar la respuesta.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

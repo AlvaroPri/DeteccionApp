@@ -70,7 +70,7 @@ dependencies {
     testImplementation(libs.junit) // Pruebas unitarias
     androidTestImplementation(libs.androidx.junit) // Pruebas instrumentadas
     androidTestImplementation(libs.androidx.espresso.core) // Espresso para pruebas UI
-    //otras
+
     // Para cargar imágenes
     implementation(libs.retrofit) // Retrofit
     implementation(libs.converter.gson) // Gson converter
@@ -78,7 +78,7 @@ dependencies {
 
     implementation(libs.androidx.activity.compose.v172)
     implementation(libs.okhttp3.okhttp.v490)
-    implementation("androidx.activity:activity-compose:1.7.2")  // Última versión estable
+
     implementation(libs.okhttp)
 
 }
